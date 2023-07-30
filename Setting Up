@@ -23,4 +23,7 @@ $ docker service create [...]
 Same sintaxe as $ docker run -d [...]
 Check all options: https://docs.docker.com/engine/reference/commandline/service_create/
 
-# Some commands for maintenance:
+To REMOVE a cluster, take care, run node by node:
+$ docker swarm leave
+Or if manager:
+$ docker swarm leave --force
