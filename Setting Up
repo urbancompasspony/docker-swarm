@@ -27,3 +27,12 @@ To REMOVE a cluster, take care, run node by node:
 $ docker swarm leave
 Or if manager:
 $ docker swarm leave --force
+
+# Commands for maintenance:
+
+$ docker service inspect
+$ docker service ls
+$ docker service rm
+$ docker service scale
+$ docker service ps
+$ docker service update
