@@ -1,0 +1,26 @@
+# From https://docs.docker.com/engine/swarm/
+
+Initialize a swarm. The docker engine targeted by this command becomes a manager in the newly created single-node swarm.
+
+$ docker swarm init --advertise-addr 192.168.0.1 --data-path-addr 172.10.0.1 --default-addr-pool 40.40.0.0/24 --listen-addr 0.0.0.0:2377
+If a cluster may want to have dedicated manager nodes that are not served as worker nodes. This could be achieved by passing --availability=drain
+
+$ docker swarm join --token XXXXXXXXXXX --listen-addr	0.0.0.0:2377
+If you pass a manager token, the node joins as a manager.
+If you pass a worker token, the node joins as a worker.
+Check if needs --advertise-addr
+
+You can set one swarm manager; or a swarm manager + swarm worker
+The manager can act as worker but a worker can't run as manager.
+Manager commands can be made only on manager nodes!
+DO NOT run two managers, in this case run 3, to run good with the rule of N/3+1 !
+
+# See all nodes:
+$ docker node ls
+
+# To configure services:
+$ docker service create [...]
+Same sintaxe as $ docker run -d [...]
+Check all options: https://docs.docker.com/engine/reference/commandline/service_create/
+
+# Some commands for maintenance:
