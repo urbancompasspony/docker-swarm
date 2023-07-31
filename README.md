@@ -9,7 +9,7 @@ $ docker swarm join --token XXXXXXXXXXXX --data-path-addr enp2s0 xx.xx.xx.xx:237
 
 # Visualizer
 
-$ docker service create -d --name=viz --publish=8080:8080/tcp --constraint=node.role==manager --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock dockersamples/visualizer
+$ docker service create -d --name=viz --publish=8080:8080/tcp --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock dockersamples/visualizer
 
 ## Commands for maintenance:
 
