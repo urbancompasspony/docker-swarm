@@ -9,13 +9,15 @@ $ docker swarm join --token XXXXXXXXXXXX --data-path-addr enp2s0 xx.xx.xx.xx:237
 
 # Visualizer
 
-$ docker service create -d --name=viz --publish=8080:8080/tcp --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock dockersamples/visualizer
+$ docker service create -d --name=viz --publish=1515:8080/tcp --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock dockersamples/visualizer
+
+http://my_server:1515 after 1 minute!
 
 # Network MacVLAN
 
 manager1==>
 
-docker network create --config-only --subnet 192.168.1.0/24 -o parent=eth0 --ip-range 192.168.1.150/32 mvl-config
+docker network create --config-only --subnet 172.20.0.0/24 -o parent=enp3s0 --ip-range 172.20.0.1/24 mvl-config
 
 docker network create -d macvlan --scope swarm --attachable --config-from mvl-config macvlan
 
