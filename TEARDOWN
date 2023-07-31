@@ -1,0 +1,13 @@
+# Remove services
+docker service rm quotes-service viz
+
+# Unregister worker nodes
+for i in $(seq "${NUM_WORKERS}"); do
+	docker --host=localhost:${i}2375 swarm leave
+done
+
+# Remove worker nodes
+docker rm -f $(docker ps -a -q --filter ancestor=docker:${DOCKER_VERSION} --format="")		
+
+# Leave Swarm mode
+docker swarm leave --force
