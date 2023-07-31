@@ -1,0 +1,66 @@
+$ sudo apt install ctop
+
+# Init Swarm master
+docker swarm init
+
+# Get join token:
+SWARM_TOKEN=$(docker swarm join-token -q worker)
+echo $SWARM_TOKEN
+
+# Get Swarm master IP (Docker for Mac xhyve VM IP)
+SWARM_MASTER_IP=$(docker info | grep -w 'Node Address' | awk '{print $3}')
+echo $SWARM_MASTER_IP
+
+# Docker version
+export DOCKER_VERSION=17.09.1-ce-dind
+
+# Number of workers
+export NUM_WORKERS=3
+
+# Run NUM_WORKERS workers with SWARM_TOKEN
+for i in $(seq "${NUM_WORKERS}"); do
+	docker run -d --privileged --name worker-${i} --hostname=worker-${i} -p ${i}2375:2375 docker:${DOCKER_VERSION}
+	docker --host=localhost:${i}2375 swarm join --token ${SWARM_TOKEN} ${SWARM_MASTER_IP}:2377
+done
+
+# Setup the visualizer
+docker service create \
+  --detach=true \
+  --name=viz \
+  --publish=8000:8080/tcp \
+  --constraint=node.role==manager \
+  --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock \
+  dockersamples/visualizer
+
+docker node ls
+
+docker service ls
+
+Try out the Visualizer: localhost:8000
+
+EXAMPLE
+docker service create --name quotes-service --detach=false -p 8080:8080 magnuslarsson/quotes:go-22
+
+# TEST
+while true; do curl localhost:8080/api/quote -s -w "\n" | jq -r .ipAddress; sleep 1; done
+
+SCALE
+docker service scale quotes-service=11 --detach=true
+
+TEARDOWN
+# Remove services
+docker service rm quotes-service viz
+
+# Unregister worker nodes
+for i in $(seq "${NUM_WORKERS}"); do
+	docker --host=localhost:${i}2375 swarm leave
+done
+
+# Remove worker nodes
+docker rm -f $(docker ps -a -q --filter ancestor=docker:${DOCKER_VERSION} --format="")		
+
+# Leave Swarm mode
+docker swarm leave --force
+
+Source:
+https://callistaenterprise.se/blogg/teknik/2017/12/18/docker-in-swarm-mode-on-docker-in-docker/
