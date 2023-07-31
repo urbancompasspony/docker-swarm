@@ -15,20 +15,15 @@ $ docker service create -d --name=viz --publish=8080:8080/tcp --mount=type=bind,
 
 manager1==>
 
-docker network create --config-only --subnet 100.98.26.0/24 -o parent=ens160.60 --ip-range 100.98.26.100/24 collabnet
+docker network create --config-only --subnet 192.168.1.0/24 -o parent=eth0 --ip-range 192.168.1.150/32 mvl-config
 
-worker1==>
-
-docker network create --config-only --subnet 100.98.26.0/24 -o parent=ens160.60 --ip-range 100.98.26.100/24 collabnet
-
-manager1==> 
-
-docker network create -d macvlan --scope swarm --config-from collabnet swarm-macvlan
+docker network create -d macvlan --scope swarm --attachable --config-from mvl-config macvlan
 
 Model to deploy:
 
-docker service create –replicas 1 –name wordpressdb1 –network swarm-macvlan –env MYSQL_ROOT_PASSWORD=collab123 –env MYSQL_DATABASE=wordpress mysql
+docker service create --replicas 2 --name mvl-net-example --network macvlan busybox:latest sleep 3600
 
+docker service create –replicas 1 –name wordpressdb1 –network macvlan –env MYSQL_ROOT_PASSWORD=collab123 –env MYSQL_DATABASE=wordpress mysql
 
 ## Commands for maintenance:
 
