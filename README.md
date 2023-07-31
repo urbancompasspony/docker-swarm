@@ -11,6 +11,25 @@ $ docker swarm join --token XXXXXXXXXXXX --data-path-addr enp2s0 xx.xx.xx.xx:237
 
 $ docker service create -d --name=viz --publish=8080:8080/tcp --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock dockersamples/visualizer
 
+# Network MacVLAN
+
+manager1==>
+
+docker network create --config-only --subnet 100.98.26.0/24 -o parent=ens160.60 --ip-range 100.98.26.100/24 collabnet
+
+worker1==>
+
+docker network create --config-only --subnet 100.98.26.0/24 -o parent=ens160.60 --ip-range 100.98.26.100/24 collabnet
+
+manager1==> 
+
+docker network create -d macvlan --scope swarm --config-from collabnet swarm-macvlan
+
+Model to deploy:
+
+docker service create –replicas 1 –name wordpressdb1 –network swarm-macvlan –env MYSQL_ROOT_PASSWORD=collab123 –env MYSQL_DATABASE=wordpress mysql
+
+
 ## Commands for maintenance:
 
 $ docker service inspect
