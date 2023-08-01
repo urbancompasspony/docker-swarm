@@ -13,7 +13,20 @@ $ docker service create -d --name=viz --publish=1515:8080/tcp --mount=type=bind,
 
 http://my_server:1515 after 1 minute!
 
-# Network MacVLAN
+# Network Overlay (Static)
+
+docker network create -d overlay --subnet=10.0.9.0/22 --attachable overlay-network
+
+networks:
+overlay-network:
+ipv4_address: 10.0.9.22
+networks:
+overlay-network:
+external: true
+
+docker run --rm --net overlay-network alpine sleep 1d
+
+# Network MacVLAN (DHCP!)
 
 manager1==>
 
