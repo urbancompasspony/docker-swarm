@@ -15,15 +15,16 @@ http://my_server:1515 after 1 minute!
 
 # Network Overlay (Static)
 
-docker network create -d overlay --subnet=10.0.9.0/22 --attachable overlay-network
+docker network create -d overlay --subnet=172.20.0.0/24 --attachable overlay-network
 
 networks:
 overlay-network:
-ipv4_address: 10.0.9.22
+ipv4_address: 172.20.0.X
 networks:
 overlay-network:
 external: true
 
+?
 docker run --rm --net overlay-network alpine sleep 1d
 
 # Network MacVLAN (DHCP!)
