@@ -13,21 +13,13 @@ $ docker service create -d --name=viz --publish=1515:8080/tcp --mount=type=bind,
 
 http://my_server:1515 after 1 minute!
 
-# Network Overlay (Static)
+# Network with Weave (Static)
 
-docker network create -d overlay --subnet=172.20.0.0/24 --attachable overlay-network
+docker plugin install weaveworks/net-plugin:latest_release
 
-docker network create --scope=swarm --attachable -d overlay-network overlay
+docker network create --driver=weaveworks/net-plugin:latest_release --scope swarm --attachable --subnet 172.20.0.0/24 macvlan
 
-networks:
-overlay-network:
-ipv4_address: 172.20.0.X
-networks:
-overlay-network:
-external: true
-
-?
-docker run --rm --net overlay-network alpine sleep 1d
+docker service create --rm -it --net=weave --ip=172.20.0.45 debian:jessie bash -c "ip addr     show"
 
 # Network MacVLAN (DHCP!)
 
