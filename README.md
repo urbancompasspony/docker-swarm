@@ -17,6 +17,8 @@ http://my_server:1515 after 1 minute!
 
 docker network create -d overlay --subnet=172.20.0.0/24 --attachable overlay-network
 
+docker network create --scope=swarm --attachable -d overlay-network overlay
+
 networks:
 overlay-network:
 ipv4_address: 172.20.0.X
